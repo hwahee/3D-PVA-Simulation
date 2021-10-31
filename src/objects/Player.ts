@@ -69,7 +69,7 @@ class Player extends TransformNode {
 		const GRAVITY = -0.2
 		const JUMP = 20
 		this._pva.setFrontAcc(0.01, 0.4)
-		this._pva.setSideAcc(0.01, 0.2)
+		this._pva.setSideAcc(0.01, 0.4)
 
 		setInterval(() => {
 			const keystat = keyboard.getKeyStatus()
@@ -81,7 +81,7 @@ class Player extends TransformNode {
 			this._pva.moveSide((keystat.d? -1 : 0) + (keystat.a ? 1 : 0))
 
 			let out_vel:Vector3=Vector3.Zero()
-			this._pva.vel.rotateByQuaternionToRef(this.rotation.toQuaternion(), out_vel)
+			this._pva.getNormalizedVel().rotateByQuaternionToRef(this.rotation.toQuaternion(), out_vel)
 
 			this.position.addToRef(out_vel, this.position)
 		}, 40)

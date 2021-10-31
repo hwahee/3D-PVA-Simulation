@@ -16,9 +16,9 @@ class PVA {
 	}
 
 	setFrontAcc(incr: number, min: number, max?: number) {
-		if(max===undefined){
-			max=Math.abs(min)
-			min=-max
+		if (max === undefined) {
+			max = Math.abs(min)
+			min = -max
 		}
 
 		this.acc.z = incr
@@ -84,6 +84,11 @@ class PVA {
 				}
 			}
 		}
+	}
+	getNormalizedVel() {
+		const speed=(Math.abs(this.vel.x) > Math.abs(this.vel.z)) ? this.vel.x : this.vel.z
+		return new Vector3(this.vel.x, this.vel.y, this.vel.z).normalize().scale(Math.abs(speed))
+		
 	}
 }
 

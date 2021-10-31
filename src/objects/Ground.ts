@@ -8,12 +8,12 @@ class Ground {
 	}
 
 	public async load() {
-		const ground = MeshBuilder.CreateBox("ground", { size: 64 }, this._scene)
+		const ground = MeshBuilder.CreateBox("ground", { size: 256 }, this._scene)
 		const groundMaterial = new StandardMaterial("grass", this._scene)
 		groundMaterial.diffuseTexture = new Texture("/images/grass.png", this._scene)
 		ground.material = groundMaterial
 
-		ground.scaling = new Vector3(1, 0.02, 1)
+		ground.scaling = new Vector3(1, 0.002, 1)
 	}
 }
 

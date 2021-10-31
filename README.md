@@ -5,3 +5,8 @@
 
 ## 사용 기술
 - babylon
+
+## 발생 문제
+- 문제: w키만 누르는 것보다 wd, wa를 같이 누르는게 빠르다
+	- 원인: normalize와 scale(speed)를 해야 하는데 speed를 제대로 구하지 못했다
+	- 해결: speed를 velX와 velZ 중 절대값이 더 큰 것으로 설정, normalize한 다음 abs(speed)로 scale함
