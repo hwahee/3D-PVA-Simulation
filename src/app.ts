@@ -2,9 +2,12 @@ import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
 import { Button } from "@babylonjs/gui"
-import { ArcRotateCamera, Camera, Color3, Color4, Engine, FreeCamera, HemisphericLight, Light, Matrix, Mesh, MeshBuilder, PointLight, Quaternion, Scene, ShadowGenerator, StandardMaterial, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera, Camera, Color3, Color4, Engine, FreeCamera, HemisphericLight, Light, Matrix, Mesh, MeshBuilder, PointLight, Quaternion, Scene, SceneLoader, ShadowGenerator, StandardMaterial, Vector3 } from "@babylonjs/core";
 import { Ground } from "./objects/Ground";
 import { Player } from "./objects/Player"
+import { mouse } from "./system/Mouse";
+import { Movable } from "./objects/Object";
+import { Chair } from "./objects/Chair";
 
 const setBtn = (b: Button, op: { w?: number | string, h?: number | string, color?: string, top?: string, left?: string, thick?: number, vAlign?: number, hAlign?: number }): void => {
 	b.width = op.w ?? b.width,
@@ -26,6 +29,7 @@ class App {
 	private _ground: Ground
 	private _light: Light
 	private _player: Player
+	private _objects:Movable[]=[]
 
 	constructor() {
 		// create the canvas html element and attach it to the webpage
@@ -52,8 +56,15 @@ class App {
 
 		this._player = new Player(this._scene)
 		this._player.load()
-		setInterval(()=>{this._player.setCameraToThis(this._camera)},100)
+		this._player.setCameraToThis(this._camera)
 
+		this._objects.push(new Chair(this._scene))
+		this._objects.forEach((i)=>{i.load()})
+
+
+		
+		//cam to mouse raycasting testing
+		mouse.init(this._canvas, this._scene)
 
 		// hide/show the Inspector
 		window.addEventListener("keydown", (e) => {

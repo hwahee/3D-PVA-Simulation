@@ -14,7 +14,10 @@ class PVA {
 	constructor() {
 
 	}
-
+	/**
+	 * 앞뒤로 움직이는 속도를 설정한다. 
+	 * 최대치가 주어지지 않을 경우 최대와 최소의 절댓값이 같도록 설정한다.
+	 */
 	setFrontAcc(incr: number, min: number, max?: number) {
 		if (max === undefined) {
 			max = Math.abs(min)
@@ -38,23 +41,24 @@ class PVA {
 		}
 		else {
 			if (this.vel.z < 0) {
-				this.vel.z += this.acc.z
+				this.vel.z += this.acc.z / 2
 				if (Math.abs(this.vel.z) < this.acc.z * 2) {
 					this.vel.z = 0
 				}
 			}
 			else if (0 < this.vel.z) {
-				this.vel.z -= this.acc.z
+				this.vel.z -= this.acc.z / 2
 				if (Math.abs(this.vel.z) < this.acc.z * 2) {
 					this.vel.z = 0
 				}
 			}
 		}
 	}
+	/**
+	 * 왼쪽과 오른쪽 이동의 속도 차이가 발생하는 경우는 거의 없으므로 
+	 * 항상 동일한 최대속도로 좌우 이동을 하도록 한다
+	 */
 	setSideAcc(incr: number, offset: number) {
-		//왼쪽과 오른쪽 이동의 속도 차이가 발생하는 경우는 거의 없으므로 
-		//항상 동일한 최대속도로 좌우 이동을 하도록 한다
-
 		this.acc.x = incr
 		this.vel_max.x = offset
 		this.vel_min.x = -offset
@@ -72,23 +76,27 @@ class PVA {
 		}
 		else {
 			if (this.vel.x < 0) {
-				this.vel.x += this.acc.x
+				this.vel.x += this.acc.x / 2
 				if (Math.abs(this.vel.x) < this.acc.x * 2) {
 					this.vel.x = 0
 				}
 			}
 			else if (0 < this.vel.x) {
-				this.vel.x -= this.acc.x
+				this.vel.x -= this.acc.x / 2
 				if (Math.abs(this.vel.x) < this.acc.x * 2) {
 					this.vel.x = 0
 				}
 			}
 		}
 	}
-	getNormalizedVel() {
-		const speed=(Math.abs(this.vel.x) > Math.abs(this.vel.z)) ? this.vel.x : this.vel.z
+	/**
+	 * 앞뒤와 좌우 속도가 햐하는 방향으로 
+	 * 두 속도 중 큰 값을 속도로 하는 벡터를 반환한다.
+	 */
+	getNormalizedVel(): Vector3 {
+		const speed = (Math.abs(this.vel.x) > Math.abs(this.vel.z)) ? this.vel.x : this.vel.z
 		return new Vector3(this.vel.x, this.vel.y, this.vel.z).normalize().scale(Math.abs(speed))
-		
+
 	}
 }
 

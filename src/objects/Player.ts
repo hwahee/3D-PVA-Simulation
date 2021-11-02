@@ -1,16 +1,10 @@
 import { ArcRotateCamera, Camera, FreeCamera, Mesh, MeshBuilder, Scene, TransformNode, Vector3, VectorSplitterBlock } from "@babylonjs/core";
+import { POS } from "../system/Global";
 import { keyboard } from "../system/Keyboard";
+import { Movable } from "./Object";
 import { PVA } from "./PVA";
 
-enum POS { L, R, FL = 0, FR, RL, RR }
-
-class Player extends TransformNode {
-	private _selected: boolean = false
-	private _pva:PVA=new PVA()
-
-	constructor(scene: Scene) {
-		super("Player", scene)
-	}
+class Player extends Movable {
 	async load() {
 		const head = MeshBuilder.CreateSphere("Player_head", { diameter: 1 }, this._scene)
 		{
@@ -59,36 +53,6 @@ class Player extends TransformNode {
 		}
 
 		this.position = new Vector3(0, 1, 0)
-
-		this.attachMove()
-	}
-
-	attachMove(){
-		const SPEED = 0.2
-		const RoG = 2 * Math.PI / 180
-		const GRAVITY = -0.2
-		const JUMP = 20
-		this._pva.setFrontAcc(0.01, 0.4)
-		this._pva.setSideAcc(0.01, 0.4)
-
-		setInterval(() => {
-			const keystat = keyboard.getKeyStatus()
-
-			const dYaw = ((keystat.q ? -1 : 0) + (keystat.e ? 1 : 0)) * RoG
-			this.rotation.set(this.rotation.x, this.rotation.y + dYaw, this.rotation.z)
-
-			this._pva.moveFront((keystat.w ? -1 : 0) + (keystat.s ? 1 : 0))
-			this._pva.moveSide((keystat.d? -1 : 0) + (keystat.a ? 1 : 0))
-
-			let out_vel:Vector3=Vector3.Zero()
-			this._pva.getNormalizedVel().rotateByQuaternionToRef(this.rotation.toQuaternion(), out_vel)
-
-			this.position.addToRef(out_vel, this.position)
-		}, 40)
-	}
-
-	setCameraToThis(cam: ArcRotateCamera | FreeCamera) {
-		cam.setTarget(this.position)
 	}
 }
 
