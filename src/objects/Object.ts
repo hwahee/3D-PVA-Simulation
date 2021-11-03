@@ -13,6 +13,7 @@ class Movable extends TransformNode {
 	private _selected: boolean = false
 	private _pva: PVA = new PVA()
 	private _movementInterval: NodeJS.Timer | undefined
+	
 	constructor(scene: Scene) {
 		super("Movable", scene)
 
@@ -25,6 +26,13 @@ class Movable extends TransformNode {
 		heart.parent = this
 
 		this.position = new Vector3(0, 4, 10)
+	}
+
+	showNametag(){
+
+	}
+	hideNametag(){
+
 	}
 
 	attachMove() {
@@ -47,6 +55,7 @@ class Movable extends TransformNode {
 		if (this._movementInterval) {
 			clearInterval(this._movementInterval)
 		}
+		this._pva.reset()
 	}
 
 	/**

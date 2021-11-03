@@ -1,35 +1,26 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import { Button } from "@babylonjs/gui"
-import { ArcRotateCamera, Camera, Color3, Color4, Engine, FreeCamera, HemisphericLight, Light, Matrix, Mesh, MeshBuilder, PointLight, Quaternion, Scene, SceneLoader, ShadowGenerator, StandardMaterial, Vector3 } from "@babylonjs/core";
+import * as GUI from "@babylonjs/gui"
+import { ArcRotateCamera, Camera, Color3, Color4, CubeMapInfo, Engine, FreeCamera, HemisphericLight, Light, Matrix, Mesh, MeshBuilder, PointLight, Quaternion, Scene, SceneLoader, ShadowGenerator, StandardMaterial, Vector3 } from "@babylonjs/core";
 import { Ground } from "./objects/Ground";
 import { Player } from "./objects/Player"
 import { mouse } from "./system/Mouse";
 import { Movable } from "./objects/Object";
 import { Chair } from "./objects/Chair";
-
-const setBtn = (b: Button, op: { w?: number | string, h?: number | string, color?: string, top?: string, left?: string, thick?: number, vAlign?: number, hAlign?: number }): void => {
-	b.width = op.w ?? b.width,
-		b.height = op.h ?? b.height,
-		b.color = op.color ?? b.color,
-		b.top = op.top ?? b.top,
-		b.left = op.left ?? b.left,
-		b.thickness = op.thick ?? b.thickness,
-		b.verticalAlignment = op.vAlign ?? b.verticalAlignment
-	b.horizontalAlignment = op.hAlign ?? b.horizontalAlignment
-}
+import { gui } from "./gui/GUI";
 
 class App {
 	private _canvas: HTMLCanvasElement
 	private _engine: Engine
 	private _scene: Scene
 	private _camera: ArcRotateCamera
+	private _advTexture: GUI.AdvancedDynamicTexture
 
 	private _ground: Ground
 	private _light: Light
 	private _player: Player
-	private _objects:Movable[]=[]
+	private _objects: Movable[] = []
 
 	constructor() {
 		// create the canvas html element and attach it to the webpage
@@ -54,16 +45,26 @@ class App {
 		let lodestone: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, this._scene)
 		lodestone.position = new Vector3(0, 2, 0)
 
+		this._advTexture=GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI")
+		gui.init(this._advTexture)
+		gui.setBtn("myBtn1", {innerText:"HELLO", w:"50px", h:"20px", color:"coral", bgcolor:"skyblue"})
+		gui.setFnByName("myBtn1", ()=>{console.log("btn click")})
+
+		gui.setBtn("myBtn2", {innerText:"PARISH", top:"90px", w:"50px", h:"20px", color:"coral", bgcolor:"skyblue"})
+		gui.setFnByName("myBtn2", ()=>{
+			gui.removeByName("myBtn1")
+			gui.removeByName("myBtn2")
+		})
+
+
 		this._player = new Player(this._scene)
 		this._player.load()
 		this._player.setCameraToThis(this._camera)
 
 		this._objects.push(new Chair(this._scene))
-		this._objects.forEach((i)=>{i.load()})
+		this._objects.forEach((i) => { i.load() })
 
-
-		
-		//cam to mouse raycasting testing
+		//cam to mouse raycasting
 		mouse.init(this._canvas, this._scene)
 
 		// hide/show the Inspector

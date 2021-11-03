@@ -11,9 +11,7 @@ class PVA {
 	public vel_max: Vector3 = Vector3.Zero()
 	public vel_min: Vector3 = Vector3.Zero()
 	public acc: Vector3 = Vector3.Zero()
-	constructor() {
-
-	}
+	constructor() {	}
 	/**
 	 * 앞뒤로 움직이는 속도를 설정한다. 
 	 * 최대치가 주어지지 않을 경우 최대와 최소의 절댓값이 같도록 설정한다.
@@ -97,6 +95,12 @@ class PVA {
 		const speed = (Math.abs(this.vel.x) > Math.abs(this.vel.z)) ? this.vel.x : this.vel.z
 		return new Vector3(this.vel.x, this.vel.y, this.vel.z).normalize().scale(Math.abs(speed))
 
+	}
+	/**
+	 * 속도 초기화
+	 */
+	reset(){
+		this.vel=Vector3.Zero()
 	}
 }
 
