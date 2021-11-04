@@ -1,8 +1,11 @@
-import { Mesh, MeshBuilder, Vector3 } from "@babylonjs/core";
+import { Mesh, MeshBuilder, Scene, Vector3 } from "@babylonjs/core";
 import { POS } from "../system/Global";
 import { Movable } from "./Object";
 
 class Chair extends Movable {
+	constructor(scene:Scene, name?:string){
+		super(scene, name??"Chair")
+	}
 	private _RoG=5 * Math.PI / 180
 	async load() {
 		const seat = MeshBuilder.CreateBox("Chair_seat", { width: 2, height: 0.25, depth: 2 }, this._scene)

@@ -45,17 +45,7 @@ class App {
 		let lodestone: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, this._scene)
 		lodestone.position = new Vector3(0, 2, 0)
 
-		this._advTexture=GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI")
-		gui.init(this._advTexture)
-		gui.setBtn("myBtn1", {innerText:"HELLO", w:"50px", h:"20px", color:"coral", bgcolor:"skyblue"})
-		gui.setFnByName("myBtn1", ()=>{console.log("btn click")})
-
-		gui.setBtn("myBtn2", {innerText:"PARISH", top:"90px", w:"50px", h:"20px", color:"coral", bgcolor:"skyblue"})
-		gui.setFnByName("myBtn2", ()=>{
-			gui.removeByName("myBtn1")
-			gui.removeByName("myBtn2")
-		})
-
+		this._advTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI")
 
 		this._player = new Player(this._scene)
 		this._player.load()

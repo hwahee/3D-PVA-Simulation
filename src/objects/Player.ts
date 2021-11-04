@@ -2,9 +2,11 @@ import { ArcRotateCamera, Camera, FreeCamera, Mesh, MeshBuilder, Scene, Transfor
 import { POS } from "../system/Global";
 import { keyboard } from "../system/Keyboard";
 import { Movable } from "./Object";
-import { PVA } from "./PVA";
 
 class Player extends Movable {
+	constructor(scene:Scene, name?:string){
+		super(scene, name??"Player")
+	}
 	async load() {
 		const head = MeshBuilder.CreateSphere("Player_head", { diameter: 1 }, this._scene)
 		{
