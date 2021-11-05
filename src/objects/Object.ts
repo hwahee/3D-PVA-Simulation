@@ -1,7 +1,8 @@
-import { AbstractMesh, AnimationGroup, ArcRotateCamera, Camera, FreeCamera, Mesh, MeshBuilder, Scene, SceneLoader, TransformNode, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera, FreeCamera, Mesh, AbstractMesh, MeshBuilder, Scene, SceneLoader, TransformNode, Vector3, AnimationGroup } from "@babylonjs/core";
 import { gui } from "../gui/GUI";
 import { keyboard } from "../system/Keyboard";
 import { PVA } from "../engine/PVA";
+import { focusMng } from "../system/FocusManager";
 
 class Movable extends TransformNode {
 	static FRONT_ACC: number = 0.01
@@ -29,22 +30,42 @@ class Movable extends TransformNode {
 		const heart: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 0.5 }, this._scene)
 		heart.parent = this
 
-		this.position = new Vector3(0, 4, 10)
+		this.position = new Vector3(0, 0, 0)
 	}
 
-	attachNametag() {
+	private _attachNametag() {
 		gui.setNameTag(`${this.name} selected`, { innerText: this.name, fontSize: 10, color: "coral", offsetY: -60 }, this)
 	}
-	detachNametag() {
+	private _detachNametag() {
 		gui.removeByName(`${this.name} selected`, this)
 	}
 
-	attachButton() {
-		gui.setBtn(`${this.name} button`, { innerText: "button", w: "60px", h: "20px", color: "coral", bgcolor: "skyblue" }, this)
-		gui.setFnByName(`${this.name} button`, () => { gui.removeByName(`${this.name} button`, this) }, this)
+	private _attachButton() {
+		let offsetY = 0
+		const getOffsetY = () => { offsetY += 20; return offsetY - 20 }
+		const getOP = (innerText?: string) => ({ innerText: innerText ?? "button", w: "60px", h: "20px", color: "coral", bgcolor: "skyblue", offsetY: getOffsetY() })
+
+		const btnClose: string = `${this.name} INTERFACE close`
+		gui.setBtn(btnClose, getOP("close"), this)
+		gui.setFnByName(btnClose, () => { this.closeInterface() }, this)
+
+		const btnDummy: string = `${this.name} INTERFACE dummy`
+		gui.setBtn(btnDummy, getOP("dummy"), this)
+		gui.setFnByName(btnDummy, () => { console.log("dummy hello") }, this)
+
+		const btnFunnymove: string = `${this.name} INTERFACE funnymove`
+		gui.setBtn(btnFunnymove, getOP("funnymove"), this)
+		gui.setFnByName(btnFunnymove, () => {
+			if (this._selected) {
+				this._pva.setVelArbitrary(new Vector3(0, 0, -2))
+			}
+		}, this)
+	}
+	private _detachButton() {
+		gui.removeByName((i) => (i.name.includes("INTERFACE")), this)
 	}
 
-	attachMove() {
+	private _attachMove() {
 		this._movementInterval = setInterval(() => {
 			const keystat = keyboard.getKeyStatus()
 
@@ -60,7 +81,7 @@ class Movable extends TransformNode {
 			this.position.addToRef(out_vel, this.position)
 		}, 40)
 	}
-	detachMove() {
+	private _detachMove() {
 		if (this._movementInterval) {
 			clearInterval(this._movementInterval)
 		}
@@ -72,16 +93,22 @@ class Movable extends TransformNode {
 	 */
 	focusIn() {
 		this._selected = true
-		this.attachMove()
+		this._attachMove()
 
-		this.attachNametag()
-		this.attachButton()
+		this._attachNametag()
 	}
 	focusOut() {
 		this._selected = false
-		this.detachMove()
+		this._detachMove()
 
-		this.detachNametag()
+		this._detachNametag()
+	}
+
+	openInterface() {
+		this._attachButton()
+	}
+	closeInterface() {
+		this._detachButton()
 	}
 
 	setCameraToThis(cam: ArcRotateCamera | FreeCamera) {
@@ -89,4 +116,33 @@ class Movable extends TransformNode {
 	}
 }
 
-export { Movable }
+class GLBModel extends Movable {
+	private _modelUrl:string=""
+	private _model:AbstractMesh|undefined
+	private _animGroup:AnimationGroup[]=[]
+	constructor(scene: Scene, name?: string) {
+		super(scene, name ?? "GLBModel")
+	}
+	setModel(url:string){
+		this._modelUrl=url
+	}
+
+	async load(){
+		super.load()
+
+		await SceneLoader.ImportMeshAsync(undefined, "", this._modelUrl, this._scene)
+        .then((res) => {
+			console.log(res)
+            this._model = res.meshes[1]
+            this._animGroup = res.animationGroups
+
+            if (this._model !== undefined) {
+                this._model.parent = this
+                this._model.scaling = new Vector3(1, 1, 1)
+                this._animGroup[0]?.pause()
+
+            }
+        })
+	}
+}
+export { Movable, GLBModel }

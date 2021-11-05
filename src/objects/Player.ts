@@ -1,13 +1,14 @@
-import { ArcRotateCamera, Camera, FreeCamera, Mesh, MeshBuilder, Scene, TransformNode, Vector3, VectorSplitterBlock } from "@babylonjs/core";
+import { Mesh, MeshBuilder, Scene, Vector3 } from "@babylonjs/core";
 import { POS } from "../system/Global";
-import { keyboard } from "../system/Keyboard";
 import { Movable } from "./Object";
 
 class Player extends Movable {
-	constructor(scene:Scene, name?:string){
-		super(scene, name??"Player")
+	constructor(scene: Scene, name?: string) {
+		super(scene, name ?? "Player")
 	}
 	async load() {
+		const legHeight = 1.5
+
 		const head = MeshBuilder.CreateSphere("Player_head", { diameter: 1 }, this._scene)
 		{
 			head.parent = this
@@ -35,7 +36,6 @@ class Player extends Movable {
 			body.position = new Vector3(0, 1, 1).normalize().scale(2)
 			body.rotation = new Vector3(Math.PI / 2 * -1, 0, 0)
 		}
-		const legHeight = 1.5
 		const leg: Mesh[] = [
 			MeshBuilder.CreateCylinder("Player_body_legFL", { diameter: 0.2, height: legHeight }, this._scene),
 			MeshBuilder.CreateCylinder("Player_body_legFR", { diameter: 0.2, height: legHeight }, this._scene),
@@ -54,7 +54,7 @@ class Player extends Movable {
 			leg[POS.RR].position = new Vector3(-offsetX, -offsetY, legHeight / -2)
 		}
 
-		this.position = new Vector3(0, 1, 0)
+		this.position = new Vector3(0, 0, 0)
 	}
 }
 

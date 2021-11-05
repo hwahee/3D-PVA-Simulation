@@ -88,14 +88,17 @@ class PVA {
 		}
 	}
 	/**
-	 * 앞뒤와 좌우 속도가 햐하는 방향으로 
+	 * 앞뒤와 좌우 속도가 향하는 방향으로 
 	 * 두 속도 중 큰 값을 속도로 하는 벡터를 반환한다.
 	 */
 	getNormalizedVel(): Vector3 {
 		const speed = (Math.abs(this.vel.x) > Math.abs(this.vel.z)) ? this.vel.x : this.vel.z
 		return new Vector3(this.vel.x, this.vel.y, this.vel.z).normalize().scale(Math.abs(speed))
-
 	}
+	setVelArbitrary(vel:Vector3){
+		this.vel=vel
+	}
+
 	/**
 	 * 속도 초기화
 	 */

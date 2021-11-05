@@ -6,7 +6,7 @@ import { ArcRotateCamera, Camera, Color3, Color4, CubeMapInfo, Engine, FreeCamer
 import { Ground } from "./objects/Ground";
 import { Player } from "./objects/Player"
 import { mouse } from "./system/Mouse";
-import { Movable } from "./objects/Object";
+import { GLBModel, Movable } from "./objects/Object";
 import { Chair } from "./objects/Chair";
 import { gui } from "./gui/GUI";
 
@@ -52,6 +52,8 @@ class App {
 		this._player.setCameraToThis(this._camera)
 
 		this._objects.push(new Chair(this._scene))
+		this._objects.push(new GLBModel(this._scene));
+		(this._objects[1] as GLBModel).setModel("https://raw.githubusercontent.com/hwahee/myResource/main/hiphopdancing.glb")
 		this._objects.forEach((i) => { i.load() })
 
 		//cam to mouse raycasting

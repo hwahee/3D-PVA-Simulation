@@ -4,6 +4,7 @@ class FocusManager {
 	private _target: Movable | undefined
 	constructor() {
 	}
+	getTarget(): Movable { return (this._target as Movable) ?? null }
 	setTarget(target: Movable) {
 		this.clearTarget()
 		this._target = target
@@ -13,7 +14,15 @@ class FocusManager {
 		this._target?.focusOut()
 		this._target = undefined
 	}
+	openContextMenu(tgt: Movable) {
+		if(this._target===tgt){
+			this._target.openInterface()
+		}
+		else{
+
+		}
+	}
 }
 
-const FocusMng: FocusManager = new FocusManager()
-export { FocusMng }
+const focusMng: FocusManager = new FocusManager()
+export { focusMng }

@@ -38,7 +38,7 @@ class Chair extends Movable {
 			leg[POS.RR].position = new Vector3(-offsetX, legHeight / -2,offsetZ)
 		}
 
-		this.position = new Vector3(6, 2, 0)
+		this.position = new Vector3(6, legHeight, 0)
 	}
 }
 
