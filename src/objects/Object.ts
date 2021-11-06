@@ -128,19 +128,18 @@ class GLBModel extends Movable {
 	}
 
 	async load(){
-		super.load()
+		//super.load()
 
 		await SceneLoader.ImportMeshAsync(undefined, "", this._modelUrl, this._scene)
         .then((res) => {
 			console.log(res)
-            this._model = res.meshes[1]
+            this._model = res.meshes[0]
             this._animGroup = res.animationGroups
 
             if (this._model !== undefined) {
                 this._model.parent = this
-                this._model.scaling = new Vector3(1, 1, 1)
+                this._model.scaling = new Vector3(2, 2, 2)
                 this._animGroup[0]?.pause()
-
             }
         })
 	}
