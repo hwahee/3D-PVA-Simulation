@@ -48,10 +48,12 @@ class App {
 		this._advTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI")
 
 		this._player = new Player(this._scene)
+		this._player.setMovement("PVA", {})
 		this._player.load()
 		this._player.setCameraToThis(this._camera)
 
-		this._objects.push(new Chair(this._scene))
+		this._objects.push(new Chair(this._scene));
+		(this._objects[0] as Chair).setMovement("default", {})
 		this._objects.push(new GLBModel(this._scene));
 		(this._objects[1] as GLBModel).setModel("https://raw.githubusercontent.com/hwahee/myResource/main/hiphopdancing.glb")
 		this._objects.forEach((i) => { i.load() })

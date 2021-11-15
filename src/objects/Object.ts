@@ -1,10 +1,11 @@
 import { ArcRotateCamera, FreeCamera, Mesh, AbstractMesh, MeshBuilder, Scene, SceneLoader, TransformNode, Vector3, AnimationGroup } from "@babylonjs/core";
 import { gui } from "../gui/GUI";
 import { keyboard } from "../system/Keyboard";
-import { PVA } from "../engine/PVA";
+import { Movement, PVA } from "../engine/Movement";
 import { focusMng } from "../system/FocusManager";
 
 class Movable extends TransformNode {
+	static VEL: Vector3 = new Vector3(1, 1, 1)
 	static FRONT_ACC: number = 0.01
 	static FRONT_VEL_MAX: number = 1
 	static SIDE_ACC: number = 0.01
@@ -13,15 +14,12 @@ class Movable extends TransformNode {
 	readonly isSelectable: boolean = true
 
 	private _selected: boolean = false
-	private _pva: PVA = new PVA()
+	private _movement: Movement | PVA | undefined
 	public advTexture
 	private _movementInterval: NodeJS.Timer | undefined
 
 	constructor(scene: Scene, name?: string) {
 		super(name ?? "Movable", scene)
-
-		this._pva.setFrontAcc(Movable.FRONT_ACC, Movable.FRONT_VEL_MAX)
-		this._pva.setSideAcc(Movable.SIDE_ACC, Movable.SIDE_VEL_MAX)
 
 		this.advTexture = gui.setAdvTextureToRemote(`${this.name}GUI`, this._scene)
 	}
@@ -31,6 +29,17 @@ class Movable extends TransformNode {
 		heart.parent = this
 
 		this.position = new Vector3(0, 0, 0)
+	}
+	public setMovement(type: string, op: { vel?: Vector3, front_acc?: number, front_vel_max?: number, side_acc?: number, side_vel_max?: number }) {
+		if (type === "PVA") {
+			this._movement = new PVA();
+			(<PVA>this._movement).setFrontAcc(op.front_acc ?? Movable.FRONT_ACC, op.front_vel_max ?? Movable.FRONT_VEL_MAX);
+			(<PVA>this._movement).setSideAcc(op.side_acc ?? Movable.SIDE_ACC, op.side_vel_max ?? Movable.SIDE_VEL_MAX)
+		}
+		else {
+			this._movement = new Movement()
+			this._movement.setVel(op.vel ?? new Vector3(Movable.VEL.x, Movable.VEL.y, Movable.VEL.z))
+		}
 	}
 
 	private _attachNametag() {
@@ -57,7 +66,9 @@ class Movable extends TransformNode {
 		gui.setBtn(btnFunnymove, getOP("funnymove"), this)
 		gui.setFnByName(btnFunnymove, () => {
 			if (this._selected) {
-				this._pva.setVelArbitrary(new Vector3(0, 0, -2))
+				if (this._movement && this._movement["setVelArbitrary"]) {
+					(<PVA>this._movement).setVelArbitrary(new Vector3(0, 0, -2))
+				}
 			}
 		}, this)
 	}
@@ -66,17 +77,19 @@ class Movable extends TransformNode {
 	}
 
 	private _attachMove() {
+		if (!this._movement) return
+
 		this._movementInterval = setInterval(() => {
 			const keystat = keyboard.getKeyStatus()
 
 			const dYaw = ((keystat.q ? -1 : 0) + (keystat.e ? 1 : 0)) * Movable.RoG
 			this.rotation.set(this.rotation.x, this.rotation.y + dYaw, this.rotation.z)
 
-			this._pva.moveFront((keystat.w ? -1 : 0) + (keystat.s ? 1 : 0))
-			this._pva.moveSide((keystat.d ? -1 : 0) + (keystat.a ? 1 : 0))
+			this._movement?.moveFront((keystat.w ? -1 : 0) + (keystat.s ? 1 : 0))
+			this._movement?.moveSide((keystat.d ? -1 : 0) + (keystat.a ? 1 : 0))
 
 			let out_vel: Vector3 = Vector3.Zero()
-			this._pva.getNormalizedVel().rotateByQuaternionToRef(this.rotation.toQuaternion(), out_vel)
+			this._movement?.getNormalizedVel().rotateByQuaternionToRef(this.rotation.toQuaternion(), out_vel)
 
 			this.position.addToRef(out_vel, this.position)
 		}, 40)
@@ -85,7 +98,9 @@ class Movable extends TransformNode {
 		if (this._movementInterval) {
 			clearInterval(this._movementInterval)
 		}
-		this._pva.reset()
+		if (this._movement && this._movement["reset"]) {
+			(<PVA>this._movement).reset()
+		}
 	}
 
 	/**
@@ -117,31 +132,31 @@ class Movable extends TransformNode {
 }
 
 class GLBModel extends Movable {
-	private _modelUrl:string=""
-	private _model:AbstractMesh|undefined
-	private _animGroup:AnimationGroup[]=[]
+	private _modelUrl: string = ""
+	private _model: AbstractMesh | undefined
+	private _animGroup: AnimationGroup[] = []
 	constructor(scene: Scene, name?: string) {
 		super(scene, name ?? "GLBModel")
 	}
-	setModel(url:string){
-		this._modelUrl=url
+	setModel(url: string) {
+		this._modelUrl = url
 	}
 
-	async load(){
+	async load() {
 		//super.load()
 
 		await SceneLoader.ImportMeshAsync(undefined, "", this._modelUrl, this._scene)
-        .then((res) => {
-			console.log(res)
-            this._model = res.meshes[0]
-            this._animGroup = res.animationGroups
+			.then((res) => {
+				console.log(res)
+				this._model = res.meshes[0]
+				this._animGroup = res.animationGroups
 
-            if (this._model !== undefined) {
-                this._model.parent = this
-                this._model.scaling = new Vector3(2, 2, 2)
-                this._animGroup[0]?.pause()
-            }
-        })
+				if (this._model !== undefined) {
+					this._model.parent = this
+					this._model.scaling = new Vector3(2, 2, 2)
+					this._animGroup[0]?.pause()
+				}
+			})
 	}
 }
 export { Movable, GLBModel }
