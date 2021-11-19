@@ -34,19 +34,22 @@ class App {
 		this._engine = new Engine(this._canvas, true)
 		this._scene = new Scene(this._engine)
 
+		this._advTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI")
+
+		//카메라 설정
 		this._camera = new ArcRotateCamera("Camera", Math.PI / 2 * 2.25, Math.PI / 2 * 0.75, 16, new Vector3(0, 2, 0), this._scene)
 		this._camera.attachControl(this._canvas, true)
 
 		this._light = new HemisphericLight("light1", new Vector3(1, 1, 0), this._scene)
 
+		//그라운드 설정, 가운데에 중앙을 알리는 구
 		this._ground = new Ground(this._scene)
 		this._ground.load()
 
 		let lodestone: Mesh = MeshBuilder.CreateSphere("sphere", { diameter: 1 }, this._scene)
 		lodestone.position = new Vector3(0, 2, 0)
 
-		this._advTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI")
-
+		//여러 오브젝트
 		this._player = new Player(this._scene)
 		this._player.setMovement("PVA", {})
 		this._player.load()
@@ -55,7 +58,8 @@ class App {
 		this._objects.push(new Chair(this._scene));
 		(this._objects[0] as Chair).setMovement("default", {})
 		this._objects.push(new GLBModel(this._scene));
-		(this._objects[1] as GLBModel).setModel("https://raw.githubusercontent.com/hwahee/myResource/main/hiphopdancing.glb")
+		(this._objects[1] as GLBModel).setModel("https://raw.githubusercontent.com/hwahee/myResource/main/hiphopdancing.glb");
+		(this._objects[1] as GLBModel).setMovement("PV_free", {})
 		this._objects.forEach((i) => { i.load() })
 
 		//cam to mouse raycasting

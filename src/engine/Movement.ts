@@ -38,6 +38,8 @@ class Movement {
 			this.vel.x = 0
 		}
 	}
+	moveUpDown(move:number){
+	}
 	/**
 	 * 앞뒤와 좌우 속도가 향하는 방향으로 
 	 * 두 속도 중 큰 값을 속도로 하는 벡터를 반환한다.
@@ -45,6 +47,24 @@ class Movement {
 	getNormalizedVel(): Vector3 {
 		const speed = (Math.abs(this.vel.x) > Math.abs(this.vel.z)) ? this.vel.x : this.vel.z
 		return new Vector3(this.vel.x, this.vel.y, this.vel.z).normalize().scale(Math.abs(speed))
+	}
+}
+class PV_free extends Movement{
+	moveUpDown(move:number){
+		if (move == 1) {
+			this.vel.y = this.vel_max.y
+		}
+		else if (move == -1) {
+			this.vel.y = -this.vel_max.y
+		}
+		else {
+			this.vel.y = 0
+		}
+	}
+	getNormalizedVel(){
+		let sp=super.getNormalizedVel()
+		sp.y=this.vel.y
+		return sp
 	}
 }
 class PVA extends Movement {
@@ -141,4 +161,4 @@ class PVA extends Movement {
 	}
 }
 
-export { Movement, PVA }
+export { Movement,PV_free, PVA }

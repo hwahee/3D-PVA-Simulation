@@ -1,7 +1,7 @@
 import { ArcRotateCamera, FreeCamera, Mesh, AbstractMesh, MeshBuilder, Scene, SceneLoader, TransformNode, Vector3, AnimationGroup } from "@babylonjs/core";
 import { gui } from "../gui/GUI";
 import { keyboard } from "../system/Keyboard";
-import { Movement, PVA } from "../engine/Movement";
+import { Movement, PVA, PV_free } from "../engine/Movement";
 import { focusMng } from "../system/FocusManager";
 
 class Movable extends TransformNode {
@@ -35,6 +35,10 @@ class Movable extends TransformNode {
 			this._movement = new PVA();
 			(<PVA>this._movement).setFrontAcc(op.front_acc ?? Movable.FRONT_ACC, op.front_vel_max ?? Movable.FRONT_VEL_MAX);
 			(<PVA>this._movement).setSideAcc(op.side_acc ?? Movable.SIDE_ACC, op.side_vel_max ?? Movable.SIDE_VEL_MAX)
+		}
+		else if (type === "PV_free") {
+			this._movement = new PV_free();
+			this._movement.setVel(op.vel ?? new Vector3(Movable.VEL.x, Movable.VEL.y, Movable.VEL.z))
 		}
 		else {
 			this._movement = new Movement()
@@ -87,6 +91,7 @@ class Movable extends TransformNode {
 
 			this._movement?.moveFront((keystat.w ? -1 : 0) + (keystat.s ? 1 : 0))
 			this._movement?.moveSide((keystat.d ? -1 : 0) + (keystat.a ? 1 : 0))
+			this._movement?.moveUpDown((keystat.Control ? -1 : 0) + (keystat[" "] ? 1 : 0))
 
 			let out_vel: Vector3 = Vector3.Zero()
 			this._movement?.getNormalizedVel().rotateByQuaternionToRef(this.rotation.toQuaternion(), out_vel)
